@@ -16,5 +16,8 @@ or try a live example: https://jsbin.com/gejugat/edit?html,output
   - If player fails to play "Big Bunny" try this stream: https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8
   - Implement at least three features in the index.html (Play, Pause, Stop, Jump to 5 sec forward, Jump to 5 sec backward, Playlist, Shuffle).
   - Test player on at least two browsers and specify in README.md which version and browser it was.
+  Tested on:
+  Chrome Version 144.0.7559.110
+  MS Edge Version 144.0.3719.115
   - Additional features are welcome and bonuses are available.
   - To pass this lab, you have to complete at least two points from the requirement list.

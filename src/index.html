@@ -7,7 +7,7 @@
   <!--
   Embed needed js libraries for video player. Note, libraries needs to be hosted on your server, under /js folder.
    -->
-   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+   <link href="css/video-js.css" rel="stylesheet" />
   <!--
   Location for CSS if needed. Note, cascade style sheets needs to be hosted on your server, under /css folder.
   -->
@@ -49,7 +49,7 @@
 	<input type="text" id ="url2" name="url2" size="100" value="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"><button type="button" id="load2">Load</button><br>
 	<button type="button" id="btnShuffle">Shuffle</button>
 
-  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+  <script src="js/video.min.js"></script>
 
   <script>
   const BIG_BUNNY_URL = "https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8";
@@ -57,7 +57,7 @@
 
   const statusEl = document.getElementById("status");
   function setStatus(msg) {
-    if (statusEl) statusEl.textContent = msg; // safe even if missing
+    if (statusEl) statusEl.textContent = msg;
   }
 
   const player = videojs("player", {
