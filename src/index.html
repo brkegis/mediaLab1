@@ -42,46 +42,112 @@
 </div>
 	
 	<p>Playlist</p>
+
+  <p id="status"></p>
 	
-	<input type="text" name="url1" size="100" value="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"><button type="button">Load</button><br>
-	<input type="text" name="url2" size="100" value="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"><button type="button">Load</button><br>
-	<button type="button">Shuffle</button>
+	<input type="text" id ="url1" name="url1" size="100" value="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8"><button type="button" id="load1">Load</button><br>
+	<input type="text" id ="url2" name="url2" size="100" value="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"><button type="button" id="load2">Load</button><br>
+	<button type="button" id="btnShuffle">Shuffle</button>
 
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 
   <script>
-    const BIG_BUNNY_URL = "https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8";
+  const BIG_BUNNY_URL = "https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8";
+  const FALLBACK_URL  = "https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8";
 
-    const player = videojs("player", {
-      autoplay: false,
-      controls: true,
-      preload: "auto",
-      sources: [{
-        src: BIG_BUNNY_URL,
-        type: "application/x-mpegURL"
-      }]
-    });
-    
-    function seekBy(deltaSeconds) {
-  const t = player.currentTime() || 0;
-  const d = player.duration(); // may be Infinity for some streams
-  let next = t + deltaSeconds;
+  const statusEl = document.getElementById("status");
+  function setStatus(msg) {
+    if (statusEl) statusEl.textContent = msg; // safe even if missing
+  }
 
-  if (Number.isFinite(d)) next = Math.min(d, next);
-  next = Math.max(0, next);
+  const player = videojs("player", {
+    autoplay: false,
+    controls: true,
+    preload: "auto",
+    sources: [{
+      src: BIG_BUNNY_URL,
+      type: "application/x-mpegURL"
+    }]
+  });
 
-  try { player.currentTime(next); } catch (e) {}
-}
+  function loadUrl(url) {
+    player.pause();
+    player.src({ src: url, type: "application/x-mpegURL" });
+    try { player.currentTime(0); } catch (e) {}
+    player.load();
+    player.play();
+  }
 
-    document.getElementById("btnBack").addEventListener("click", () => seekBy(-5));
-    document.getElementById("btnFwd").addEventListener("click", () => seekBy(5));
-    document.getElementById("btnPlay").addEventListener("click", () => player.play());
-    document.getElementById("btnPause").addEventListener("click", () => player.pause());
-    document.getElementById("btnStop").addEventListener("click", () => {
-  player.pause();
-  try { player.currentTime(0); } catch (e) {}
-});
+  function seekBy(deltaSeconds) {
+    const t = player.currentTime() || 0;
+    const d = player.duration();
+    let next = t + deltaSeconds;
 
-  </script>
+    if (Number.isFinite(d)) next = Math.min(d, next);
+    next = Math.max(0, next);
+
+    try { player.currentTime(next); } catch (e) {}
+  }
+
+  // Buttons
+  document.getElementById("btnBack").addEventListener("click", () => seekBy(-5));
+  document.getElementById("btnFwd").addEventListener("click", () => seekBy(5));
+  document.getElementById("btnPlay").addEventListener("click", () => player.play());
+  document.getElementById("btnPause").addEventListener("click", () => player.pause());
+  document.getElementById("btnStop").addEventListener("click", () => {
+    player.pause();
+    try { player.currentTime(0); } catch (e) {}
+  });
+
+  // Playlist inputs
+  const url1Input = document.getElementById("url1");
+  const url2Input = document.getElementById("url2");
+
+  // Ensure they start with the required URLs
+  url1Input.value = BIG_BUNNY_URL;
+  url2Input.value = FALLBACK_URL;
+
+  document.getElementById("load1").addEventListener("click", () => {
+    const url = url1Input.value.trim();
+    if (!url) return alert("URL 1 is empty");
+    setStatus("Loading URL 1…");
+    loadUrl(url);
+  });
+
+  document.getElementById("load2").addEventListener("click", () => {
+    const url = url2Input.value.trim();
+    if (!url) return alert("URL 2 is empty");
+    setStatus("Loading URL 2…");
+    loadUrl(url);
+  });
+
+  document.getElementById("btnShuffle").addEventListener("click", () => {
+    const urls = [url1Input.value.trim(), url2Input.value.trim()].filter(Boolean);
+    if (urls.length === 0) return alert("No URLs to shuffle");
+    const pick = urls[Math.floor(Math.random() * urls.length)];
+    setStatus("Shuffle picked a stream…");
+    loadUrl(pick);
+  });
+
+  // Auto fallback on error
+  let triedFallback = false;
+  player.on("error", () => {
+    const err = player.error();
+    console.warn("Video.js error:", err);
+
+    if (!triedFallback) {
+      triedFallback = true;
+      setStatus("Big Bunny failed — switching to fallback stream…");
+      loadUrl(FALLBACK_URL);
+      return;
+    }
+
+    setStatus("Both streams failed to load in this browser/network.");
+    alert("Both streams failed. Try another browser or check DevTools Console.");
+  });
+
+  setStatus("Ready. Click Play. If Big Bunny fails, fallback loads automatically.");
+</script>
+
 </body>
 </html>
