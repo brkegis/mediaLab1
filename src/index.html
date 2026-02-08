@@ -33,9 +33,12 @@
     height="450"
   ></video>
   
-	<button type="button">Play</button>
-	<button type="button">Pause</button>
-	<button type="button">Stop</button>
+<div style="margin:12px 0; display:flex; gap:8px; flex-wrap:wrap;">
+  <button type="button" id="btnPlay">Play</button>
+  <button type="button" id="btnPause">Pause</button>
+  <button type="button" id="btnStop">Stop</button>
+</div>
+
 	<button type="button">Jump to 5 sec forward</button>
 	<button type="button">Jump to 5 sec backwards</button>	
 	
@@ -59,6 +62,14 @@
         type: "application/x-mpegURL"
       }]
     });
+
+    document.getElementById("btnPlay").addEventListener("click", () => player.play());
+    document.getElementById("btnPause").addEventListener("click", () => player.pause());
+    document.getElementById("btnStop").addEventListener("click", () => {
+  player.pause();
+  try { player.currentTime(0); } catch (e) {}
+});
+
   </script>
 </body>
 </html>
