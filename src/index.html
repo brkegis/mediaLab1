@@ -37,10 +37,9 @@
   <button type="button" id="btnPlay">Play</button>
   <button type="button" id="btnPause">Pause</button>
   <button type="button" id="btnStop">Stop</button>
+  <button type="button" id="btnBack">Jump -5s</button>
+  <button type="button" id="btnFwd">Jump +5s</button>
 </div>
-
-	<button type="button">Jump to 5 sec forward</button>
-	<button type="button">Jump to 5 sec backwards</button>	
 	
 	<p>Playlist</p>
 	
@@ -62,7 +61,20 @@
         type: "application/x-mpegURL"
       }]
     });
+    
+    function seekBy(deltaSeconds) {
+  const t = player.currentTime() || 0;
+  const d = player.duration(); // may be Infinity for some streams
+  let next = t + deltaSeconds;
 
+  if (Number.isFinite(d)) next = Math.min(d, next);
+  next = Math.max(0, next);
+
+  try { player.currentTime(next); } catch (e) {}
+}
+
+    document.getElementById("btnBack").addEventListener("click", () => seekBy(-5));
+    document.getElementById("btnFwd").addEventListener("click", () => seekBy(5));
     document.getElementById("btnPlay").addEventListener("click", () => player.play());
     document.getElementById("btnPause").addEventListener("click", () => player.pause());
     document.getElementById("btnStop").addEventListener("click", () => {
